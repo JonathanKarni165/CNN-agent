@@ -17,7 +17,7 @@ OUT_DIR = Path(__file__).resolve().parents[1] / "outputs"
 def _break_between_days(df):
     """Insert a NaN row at each day boundary so plot lines don't bridge overnight gaps."""
     day = df.index.date
-    boundary = pd.Series(day).ne(pd.Series(day).shift()).to_numpy()
+    boundary = pd.Series(day).ne(pd.Series(day).shift()).to_numpy().copy()
     boundary[0] = False
     if not boundary.any():
         return df
@@ -44,8 +44,10 @@ def plot_price_volume(df: pd.DataFrame) -> Path:
     ax_price.set_ylabel("Price ($)")
     ax_price.grid(alpha=0.3)
 
-    ax_vol.bar(df.index, df["volume"], width=0.0005, color="#888888")
-    ax_vol.set_ylabel("Volume")
+    daily_volume = df["volume"].resample("1D").sum()
+    daily_volume = daily_volume[daily_volume > 0]
+    ax_vol.bar(daily_volume.index, daily_volume.values, width=0.8, color="#888888")
+    ax_vol.set_ylabel("Daily Volume")
     ax_vol.grid(alpha=0.3)
 
     fig.tight_layout()
