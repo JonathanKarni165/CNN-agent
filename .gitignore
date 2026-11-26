@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store
+
+# generated data / trained models (reproducible via notebooks 01-07)
+data/
